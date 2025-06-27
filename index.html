@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Nearby Places Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    #map {
+      height: 100vh;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h3 style="text-align:center">Nearby UPS Locations for Parcel Jobs </h3>
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+   
+    let map;
+    //UPS ITC lat & long value
+    lat =13.03245745712498;
+    lng =80.16961717954858;
+    function initMap(lat, lng) {
+        map = L.map('map').setView([lat, lng], 15);
+
+        // OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // User's location marker harcoded with UPS ITC lat & long value
+        const userMarker = L.marker([lat,lng]).addTo(map)
+        .bindPopup('You are here')
+        .openPopup();
+        
+        //Json for nearby locations
+        let locationData = [
+            { "id":"123","lati":"13.0317216005301","lon":"80.17098536908466", 
+            "tags": {"StoreType": "UPS Store","name": "The UPS Store",}
+            },
+            {"id":"456","lati":"13.028068185418105","lon":"80.16949471381976", 
+            "tags": {"StoreType": "UPS Warehouse","name": "UPS Access Point",}
+            },
+            {"id":"789","lati":"13.030157544717737","lon":"80.16282067101704", 
+            "tags": {"StoreType": "Authorised Shiipping Outlet","name": "ASO",}
+            }
+        ];
+
+        locationData.forEach(function(data,index){
+            console.log(data);
+            const marker = L.marker([data.lati, data.lon]).addTo(map);
+            const name = data.tags.name || 'Unnamed';
+            marker.bindPopup(`<strong>${name}</strong><br>Type: ${data.tags.StoreType}`);
+        })
+
+    }
+    // Get user's location harcoded with UPS ITC lat & long value
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const { latitude, longitude } = pos.coords;
+            initMap(lat, lng);
+        },
+        () => alert("Location access denied.")
+        );
+    } else {
+        alert("Geolocation not supported.");
+    }
+</script>
+
+</body>
+</html>
